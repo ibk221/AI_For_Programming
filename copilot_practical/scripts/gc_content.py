@@ -33,6 +33,11 @@ def main():
         description="Print GC content percentages for sequences in a FASTA file."
     )
     parser.add_argument("fasta_file", help="path to a FASTA file")
+    parser.add_argument(
+        "--min-gc",
+        type=float,
+        help="minimum GC percentage; only print records strictly above this value",
+    )
     args = parser.parse_args()
 
     for header, sequence in fasta_records(args.fasta_file):
@@ -42,6 +47,8 @@ def main():
         sequence = sequence.upper()
         gc_count = sequence.count("G") + sequence.count("C")
         gc_percentage = gc_count / len(sequence) * 100
+        if args.min_gc is not None and gc_percentage <= args.min_gc:
+            continue
         print(f">{header}\t{gc_percentage:.2f}%")
 
 
